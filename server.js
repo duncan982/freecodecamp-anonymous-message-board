@@ -16,6 +16,20 @@ const app = express();
 app.use('/public', express.static(process.cwd() + '/public'));
 
 app.use(cors({origin: '*'})); //For FCC testing purposes only
+app.use(helmet({
+  frameguard: {
+    action: 'deny'
+  },
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'"]
+    }
+  },
+  dnsPrefetchControl: false
+}));
+app.use(xss());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
