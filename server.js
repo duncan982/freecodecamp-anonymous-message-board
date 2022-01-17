@@ -1,15 +1,15 @@
-'use strict';
 require('dotenv').config();
-const express     = require('express');
-const bodyParser  = require('body-parser');
-const cors        = require('cors');
-
-const apiRoutes         = require('./routes/api.js');
-const fccTestingRoutes  = require('./routes/fcctesting.js');
-const runner            = require('./test-runner');
+const express = require('express');
+const bodyParser = require('body-parser');
+const apiRoutes = require('./routes/api.js');
+const fccTestingRoutes = require('./routes/fcctesting.js');
+const runner = require('./test-runner');
 const connectDB = require('./db/connectDB');
 const helmet = require('helmet');
 const xss = require('xss-clean')
+const cors = require('cors');
+const Thread = require('./models/Thread');
+const Reply = require('./models/Reply');
 
 const app = express();
 
@@ -18,13 +18,13 @@ app.use('/public', express.static(process.cwd() + '/public'));
 app.use(cors({origin: '*'})); //For FCC testing purposes only
 app.use(helmet({
   frameguard: {
-    action: 'deny'
+    action: 'sameorigin'
   },
   contentSecurityPolicy: {
     directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'"],
-      styleSrc: ["'self'"]
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://code.jquery.com/jquery-2.2.1.min.js"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      defaultSrc: ["'self'"]
     }
   },
   dnsPrefetchControl: false
@@ -54,7 +54,8 @@ app.route('/')
 fccTestingRoutes(app);
 
 //Routing for API 
-apiRoutes(app);
+app.use('/api', apiRoutes);
+//apiRoutes(app);
 
 //404 Not Found Middleware
 app.use(function(req, res, next) {
@@ -69,7 +70,8 @@ const port = process.env.PORT || 3000;
 const start = async () => {
   try {
     await connectDB(process.env.MONGO_URI);
-    await Stock.deleteMany({}); // For the purpose of this app we don't care about saving any data, so any time the app connects, all data in the DB will be deleted.
+    //await Reply.deleteMany({});
+    //await Thread.deleteMany({}); // For the purpose of this app we don't care about saving any data, so any time the app connects, all data in the DB will be deleted.
     app.listen(port, () => {
       console.log(`Server is listening on port ${port}...`)
     });
