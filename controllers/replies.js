@@ -32,15 +32,17 @@ const getAllReplies = async (req, res) => {
         })
         .map(o => {
           return {_id: o._id, text: o.text, created_on: o.createdAt}
-        }),
+        }).sort((a,b) => a.created_on.toString().localeCompare(b.created_on.toString())).reverse(),
       replycount: replyObj
         .filter(o => {
           return o.thread_id.toString() === t._doc._id.toString();
         }).length
     });
-  });
-
-  return res.send(rep.find(({_id}) => _id.toString() === req.query.thread_id));
+  })
+    ;
+  var repFind = rep.find(({_id}) => _id.toString() === req.query.thread_id);
+  //console.log(repFind)
+  return res.send(repFind);
 }
 
 const deleteReply = async (req, res) => {

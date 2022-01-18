@@ -26,7 +26,8 @@ const getThreads = async (req, res) => {
 
   // Merge the data from the two calls to the DB into one 'rep'-ly/response
   var rep = threads.map(t => {
-    return ({_id: t._doc._id,
+    return ({
+      _id: t._doc._id,
       text: t._doc.text,
       created_on: t._doc.createdAt,
       replies: replyObj
@@ -35,14 +36,17 @@ const getThreads = async (req, res) => {
         })
         .map(o => {
           return {_id: o._id, text: o.text, created_on: o.createdAt}
-        })
-        .slice(-3),
+        }).sort((a,b) => a.created_on - b.created_on),
       replycount: replyObj
         .filter(o => {
           return o.thread_id.toString() === t._doc._id.toString();
         }).length
     });
-  }).slice(-10);
+  }).sort((a,b) => a.created_on - b.created_on);
+  rep = repRev = rep.slice(-10).reverse();
+  for (var r of rep) {
+    r.replies = r.replies.slice(-3).reverse();
+  }
   return res.send(rep);
 }
 

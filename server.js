@@ -27,7 +27,10 @@ app.use(helmet({
       defaultSrc: ["'self'"]
     }
   },
-  dnsPrefetchControl: false
+  dnsPrefetchControl: false,
+  referrerPolicy: {
+    policy: ["origin"]
+  }
 }));
 app.use(xss());
 
