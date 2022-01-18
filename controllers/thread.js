@@ -47,7 +47,16 @@ const getThreads = async (req, res) => {
 }
 
 const deleteThread = async (req, res) => {
- return res.json({thread: 'delete'});
+  const thread = await Thread.findOne({_id: req.body.thread_id});
+  if (!thread) {
+    res.send('something went wrong');
+  }
+  if (!await thread.comparePassword(req.body.delete_password)) {
+    return res.send('wrong password');
+  }
+  await Thread.deleteOne({_id: req.body.thread_id});
+  await Reply.deleteMany({thread_id: req.body.thread_id});
+  return res.send('success');
 }
 
 const reportThread = async (req, res) => {
