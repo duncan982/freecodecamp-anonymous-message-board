@@ -43,9 +43,10 @@ const getThreads = async (req, res) => {
         }).length
     });
   }).sort((a,b) => a.created_on - b.created_on);
-  rep = repRev = rep.slice(-10).reverse();
+
+  rep = rep.slice(-10).reverse(); // Latest thread on top
   for (var r of rep) {
-    r.replies = r.replies.slice(-3).reverse();
+    r.replies = r.replies.slice(-3).reverse(); // Latest reply on top
   }
   return res.send(rep);
 }
