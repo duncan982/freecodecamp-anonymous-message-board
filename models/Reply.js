@@ -7,10 +7,6 @@ const ReplySchema = new mongoose.Schema({
     ref: 'Thread',
     required: [true, 'Reply must be made in a thread']
   },
-  deleted: {
-    type: Boolean,
-    default: false
-  },
   delete_password: {
     type: String,
     required: [true, 'Password for reply must be provided']

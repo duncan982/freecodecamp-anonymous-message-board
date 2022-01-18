@@ -3,8 +3,6 @@ const Reply = require('../models/Reply');
 
 const createThread = async (req, res) => {
   req.body.board = req.params.board;
-  //console.log(req.params);
-  //console.log(req.body.board);
   const newThread = await Thread.create(req.body)
   if (!newThread) {
     return res.json({error: 'Coudln\'t create new thread'});
@@ -23,7 +21,7 @@ const getThreads = async (req, res) => {
   const threadIds = threads.map(t => t._id);
 
   // Find the replies that match the thread id's
-  const replyObj = await Reply.find({'threadid': {$in: threadIds}});
+  const replyObj = await Reply.find({'thread_id': {$in: threadIds}});
 
   // Merge the data from the two calls to the DB into one 'rep'-ly/response
   var rep = threads.map(t => {
@@ -60,7 +58,11 @@ const deleteThread = async (req, res) => {
 }
 
 const reportThread = async (req, res) => {
- return res.json({thread: 'reported'});
+  const thread = await Thread.findOneAndUpdate({_id: req.body.report_id}, {reported: true});
+  if (!thread) {
+    return res.send('something went wrong');
+  }
+  return res.send('success');
 }
 
 module.exports = {
