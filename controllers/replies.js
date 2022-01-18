@@ -10,14 +10,10 @@ const createReply = async (req, res) => {
 }
 
 const getAllReplies = async (req, res) => {
-  //console.log(req.params);
-  //console.log(req.query);
   const threads = await Thread.find({board: req.params.board});
-  //console.log(threads);
 
   // Find the replies that match the thread id's
   const replyObj = await Reply.find({'thread_id': req.query.thread_id});
-  //console.log(replyObj);
 
   // Merge the data from the two calls to the DB into one 'rep'-ly/response
   var rep = threads.map(t => {
@@ -41,11 +37,21 @@ const getAllReplies = async (req, res) => {
 }
 
 const deleteReply = async (req, res) => {
-  return res.json({reply: 'delete reply'});
+  const reply = await Reply.findById(req.body.reply_id);
+  if (!reply.comparePassword(req.body.delete_password)) {
+    return res.send('something went wrong');
+  }
+  await Reply.deleteOne({_id: req.body.reply_id});
+  return res.send('success');
 }
 
 const reportReply = async (req, res) => {
-  return res.json({reply: 'report reply'});
+  console.log(req.body);
+  const reply = await Reply.findOneAndUpdate({_id: req.body.reply_id}, {reported: true});
+  if (!reply) {
+    return res.send('something went wrong');
+  }
+  return res.send('success');
 }
 
 module.exports = {
