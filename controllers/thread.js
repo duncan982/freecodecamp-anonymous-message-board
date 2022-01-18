@@ -7,6 +7,7 @@ const createThread = async (req, res) => {
   if (!newThread) {
     return res.json({error: 'Coudln\'t create new thread'});
   }
+  req.body._id = newThread._id;
   return res.send(req.body);
 }
 
@@ -41,14 +42,14 @@ const getThreads = async (req, res) => {
           return o.thread_id.toString() === t._doc._id.toString();
         }).length
     });
-  });
+  }).slice(-10);
   return res.send(rep);
 }
 
 const deleteThread = async (req, res) => {
   const thread = await Thread.findOne({_id: req.body.thread_id});
   if (!thread) {
-    res.send('something went wrong');
+    return res.send('something went wrong');
   }
   if (!await thread.comparePassword(req.body.delete_password)) {
     return res.send('wrong password');

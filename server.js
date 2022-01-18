@@ -70,8 +70,8 @@ const port = process.env.PORT || 3000;
 const start = async () => {
   try {
     await connectDB(process.env.MONGO_URI);
-    //await Reply.deleteMany({});
-    //await Thread.deleteMany({}); // For the purpose of this app we don't care about saving any data, so any time the app connects, all data in the DB will be deleted.
+    await Reply.deleteMany({});
+    await Thread.deleteMany({}); // For the purpose of this app we don't care about saving any data, so any time the app connects, all data in the DB will be deleted.
     app.listen(port, () => {
       console.log(`Server is listening on port ${port}...`)
     });

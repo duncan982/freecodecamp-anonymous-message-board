@@ -6,10 +6,6 @@ const ThreadSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Board must be provided.']
   },
-  deleted: {
-    type: Boolean,
-    default: false
-  },
   delete_password: {
     type: String,
     required: [true, 'Password for thread must be provided']

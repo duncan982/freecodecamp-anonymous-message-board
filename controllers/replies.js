@@ -1,10 +1,11 @@
 const Reply = require('../models/Reply');
 const Thread = require('../models/Thread');
+const mongoose = require('mongoose');
 
 const createReply = async (req, res) => {
   const reply = await Reply.create(req.body);
   if (!reply) {
-    return res.json({error: 'could not post reply.'})
+    return res.send('could not post reply');
   }
   return res.send(reply);
 }
@@ -15,9 +16,14 @@ const getAllReplies = async (req, res) => {
   // Find the replies that match the thread id's
   const replyObj = await Reply.find({'thread_id': req.query.thread_id});
 
+  if (!threads || !replyObj) {
+    return res.json({error: 'something went woring'})
+  }
+
   // Merge the data from the two calls to the DB into one 'rep'-ly/response
   var rep = threads.map(t => {
-    return ({_id: t._doc._id,
+    return ({
+      _id: t._doc._id,
       text: t._doc.text,
       created_on: t._doc.createdAt,
       replies: replyObj
@@ -33,20 +39,23 @@ const getAllReplies = async (req, res) => {
         }).length
     });
   });
-  return res.send(rep[0]);
+
+  return res.send(rep.find(({_id}) => _id.toString() === req.query.thread_id));
 }
 
 const deleteReply = async (req, res) => {
-  const reply = await Reply.findById(req.body.reply_id);
-  if (!reply.comparePassword(req.body.delete_password)) {
+  const reply = await Reply.findOne({_id: req.body.reply_id});
+  if (!reply) {
     return res.send('something went wrong');
+  }
+  if (!await reply.comparePassword(req.body.delete_password)) {
+    return res.send('wrong password');
   }
   await Reply.deleteOne({_id: req.body.reply_id});
   return res.send('success');
 }
 
 const reportReply = async (req, res) => {
-  console.log(req.body);
   const reply = await Reply.findOneAndUpdate({_id: req.body.reply_id}, {reported: true});
   if (!reply) {
     return res.send('something went wrong');
