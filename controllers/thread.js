@@ -34,7 +34,8 @@ const getThreads = async (req, res) => {
         })
         .map(o => {
           return {_id: o._id, text: o.text, created_on: o.createdAt}
-        }),
+        })
+        .slice(-3),
       replycount: replyObj
         .filter(o => {
           return o.thread_id.toString() === t._doc._id.toString();

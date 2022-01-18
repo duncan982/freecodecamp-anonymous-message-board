@@ -9,6 +9,7 @@ const createReply = async (req, res) => {
 }
 
 const getAllReplies = async (req, res) => {
+  console.log(req.body);
   return res.json({reply: 'get all replies'});
 }
 
