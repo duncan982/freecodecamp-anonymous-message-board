@@ -7,6 +7,10 @@ const createReply = async (req, res) => {
   if (!reply) {
     return res.send('could not post reply');
   }
+  const thread = await Thread.findOneAndUpdate({_id: reply.thread_id}, {updatedAt: reply.updatedAt});
+  if (!thread) {
+    return res.send('could not bump thread');
+  }
   return res.send(reply);
 }
 
@@ -25,7 +29,7 @@ const getAllReplies = async (req, res) => {
     return ({
       _id: t._doc._id,
       text: t._doc.text,
-      created_on: t._doc.createdAt,
+      created_on: t._doc.updatedAt,
       replies: replyObj
         .filter(o => {
           return o.thread_id.toString() === t._doc._id.toString();

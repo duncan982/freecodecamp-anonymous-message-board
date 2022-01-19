@@ -18,18 +18,21 @@ app.use('/public', express.static(process.cwd() + '/public'));
 app.use(cors({origin: '*'})); //For FCC testing purposes only
 app.use(helmet({
   frameguard: {
-    action: 'sameorigin'
+    action: "sameorigin"
   },
   contentSecurityPolicy: {
     directives: {
       scriptSrc: ["'self'", "'unsafe-inline'", "https://code.jquery.com/jquery-2.2.1.min.js"],
       styleSrc: ["'self'", "'unsafe-inline'"],
-      defaultSrc: ["'self'"]
+      defaultSrc: ["'self'"],
+      frameAncestors: ["'none'"]
     }
   },
-  dnsPrefetchControl: false,
+  dnsPrefetchControl: {
+    allow: false
+  },
   referrerPolicy: {
-    policy: ["origin"]
+    policy: "same-origin"
   }
 }));
 app.use(xss());

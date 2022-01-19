@@ -7,8 +7,9 @@ const createThread = async (req, res) => {
   if (!newThread) {
     return res.json({error: 'Coudln\'t create new thread'});
   }
-  req.body._id = newThread._id;
-  return res.send(req.body);
+
+  var rep = {bumped_on: newThread.updatedAt, replies: [], board: req.params.board, created_on: newThread.createdAt};
+  return res.send({...newThread._doc, ...rep});
 }
 
 /**
@@ -29,7 +30,8 @@ const getThreads = async (req, res) => {
     return ({
       _id: t._doc._id,
       text: t._doc.text,
-      created_on: t._doc.createdAt,
+      created_on: t._doc.updatedAt,
+      bumped_on: t._doc.updatedAt,
       replies: replyObj
         .filter(o => {
           return o.thread_id.toString() === t._doc._id.toString();
